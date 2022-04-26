@@ -1,37 +1,50 @@
 ﻿using Fries.Helpers;
+using Fries.Helpers.Extensions;
 using Fries.Models.Requests.FilesStorage;
 using Fries.Services.Abstractions.FilesUpload;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fries.Services.FilesStorage
 {
     public class FilesStorageService : IFilesStorageService
     {
         private readonly string _rootPath;
-        //private readonly ILogger<FilesUploadService> _logger;
+        private readonly ILogger<FilesStorageService> _logger;
 
-        public FilesStorageService()
+        public FilesStorageService(ILogger<FilesStorageService> logger)
         {
             var homePath = (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX) ?
                 Environment.GetEnvironmentVariable("HOME") :
                 Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
             _rootPath = Path.Combine(homePath, "my-files-storage");
+            _logger = logger;
         }
 
         public async Task StoreFiles(StoreFileRequest request)
         {
+            if (request == null)
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request));
+
+            if (request.FileContents.IsNullOrEmpty())
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.FileContents));
+
+            if (request.DestinationFolder == null)
+                request.DestinationFolder = string.Empty;
+
             Directory.CreateDirectory(_rootPath);
 
-            var tasks = request.FileContents.Select(fileContent =>
+            var tasks = request.FileContents.Select(async fileContent =>
             {
-                var filePath = Path.Combine(_rootPath, fileContent.FileName);
+                try
+                {
+                    var filePath = Path.Combine(_rootPath, request.DestinationFolder, fileContent.FileName);
 
-                return File.WriteAllBytesAsync(filePath, fileContent.Data);
+                    await File.WriteAllBytesAsync(filePath, fileContent.Data);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, string.Empty);
+                }
             });
 
             await Task.WhenAll(tasks);
@@ -39,7 +52,10 @@ namespace Fries.Services.FilesStorage
 
         public void DeleteFiles(DeleteFilesRequest request)
         {
-            foreach(var path in request.Paths)
+            if (request.Paths.IsNullOrEmpty())
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.Paths));
+
+            foreach (var path in request.Paths)
             {
                 try
                 {
@@ -56,7 +72,7 @@ namespace Fries.Services.FilesStorage
                 }
                 catch (Exception ex)
                 {
-                    //_logger.LogError();
+                    _logger.LogError(ex, string.Empty);
                 }
             }
         }
@@ -65,14 +81,14 @@ namespace Fries.Services.FilesStorage
         {
             var fullPath = Path.Combine(_rootPath, path);
 
-            if(File.Exists(fullPath))
+            if (File.Exists(fullPath))
             {
                 var data = await File.ReadAllBytesAsync(fullPath);
                 return data;
             }
             else
             {
-                throw new Exception();
+                throw CustomException.FilesStorage.FileNotFound(path);
             }
         }
     }

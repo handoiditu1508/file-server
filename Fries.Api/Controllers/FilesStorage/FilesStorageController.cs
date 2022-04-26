@@ -1,6 +1,7 @@
-﻿using Fries.Models.Requests.FilesStorage;
+﻿using Fries.Helpers.Extensions;
+using Fries.Models.Common;
+using Fries.Models.Requests.FilesStorage;
 using Fries.Services.Abstractions.FilesUpload;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fries.Api.Controllers.FilesStorage
@@ -10,14 +11,25 @@ namespace Fries.Api.Controllers.FilesStorage
     public class FilesStorageController : ControllerBase
     {
         private readonly IFilesStorageService _filesStorageService;
+        private readonly ILogger<FilesStorageController> _logger;
 
-        public FilesStorageController(IFilesStorageService filesStorageService)
+        public FilesStorageController(IFilesStorageService filesStorageService, ILogger<FilesStorageController> logger)
         {
             _filesStorageService = filesStorageService;
+            _logger = logger;
         }
 
+        /// <summary>
+        /// Store files.
+        /// </summary>
+        /// <param name="request.destinationFolder">Folder to store files.</param>
+        /// <param name="request.fileContents">List of file contents.</param>
+        /// <param name="request.fileContents.data">File's bytes array.</param>
+        /// <param name="request.fileContents.fileName">File's name.</param>
         [HttpPost]
         [Route(nameof(StoreFiles))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> StoreFiles(StoreFileRequest request)
         {
             try
@@ -27,12 +39,19 @@ namespace Fries.Api.Controllers.FilesStorage
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(ex, string.Empty);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToSimpleError());
             }
         }
 
+        /// <summary>
+        /// Delete files.
+        /// </summary>
+        /// <param name="request.paths">Folder or file paths to delete.</param>
         [HttpPost]
         [Route(nameof(DeleteFiles))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteFiles(DeleteFilesRequest request)
         {
             try
@@ -42,11 +61,20 @@ namespace Fries.Api.Controllers.FilesStorage
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                _logger.LogError(ex, string.Empty);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToSimpleError());
             }
         }
 
+        /// <summary>
+        /// Get file.
+        /// </summary>
+        /// <param name="path">Path of file.</param>
+        /// <returns>File base on path.</returns>
         [HttpGet]
+        [Route(nameof(GetFile) + "/{path}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetFile(string path)
         {
             try
@@ -56,7 +84,8 @@ namespace Fries.Api.Controllers.FilesStorage
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                _logger.LogError(ex, string.Empty);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToSimpleError());
             }
         }
     }
