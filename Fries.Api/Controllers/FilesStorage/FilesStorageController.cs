@@ -72,7 +72,7 @@ namespace Fries.Api.Controllers.FilesStorage
         /// <param name="path">Path of file.</param>
         /// <returns>File base on path.</returns>
         [HttpGet]
-        [Route(nameof(GetFile) + "/{path}")]
+        [Route("{path}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetFile(string path)
