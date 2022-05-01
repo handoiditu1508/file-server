@@ -2,7 +2,7 @@
 
 namespace Fries.Models.Requests.FilesStorage
 {
-    public class StoreFileRequest
+    public class StoreFilesRequest
     {
         public string DestinationFolder { get; set; }
 

@@ -20,7 +20,25 @@ namespace Fries.Services.FilesStorage
             _logger = logger;
         }
 
-        public async Task StoreFiles(StoreFileRequest request)
+        public async Task StoreFile(StoreFileRequest request)
+        {
+            if (request == null)
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request));
+
+            if (request.FileContent == null)
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.FileContent));
+
+            if (request.DestinationFolder == null)
+                request.DestinationFolder = string.Empty;
+
+            Directory.CreateDirectory(_rootPath);
+
+            var filePath = Path.Combine(_rootPath, request.DestinationFolder, request.FileContent.FileName);
+
+            await File.WriteAllBytesAsync(filePath, request.FileContent.Data);
+        }
+
+        public async Task StoreFiles(StoreFilesRequest request)
         {
             if (request == null)
                 throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request));
@@ -48,6 +66,23 @@ namespace Fries.Services.FilesStorage
             });
 
             await Task.WhenAll(tasks);
+        }
+
+        public void DeleteFile(string path)
+        {
+            if (path.IsNullOrWhiteSpace())
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(path));
+
+            var fullPath = Path.Combine(_rootPath, path);
+
+            if (FileHelper.IsDirectory(path))
+            {
+                Directory.Delete(fullPath, true);
+            }
+            else
+            {
+                File.Delete(fullPath);
+            }
         }
 
         public void DeleteFiles(DeleteFilesRequest request)

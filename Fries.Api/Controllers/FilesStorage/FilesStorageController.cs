@@ -20,17 +20,42 @@ namespace Fries.Api.Controllers.FilesStorage
         }
 
         /// <summary>
-        /// Store files.
+        /// Store single file.
         /// </summary>
-        /// <param name="request.destinationFolder">Folder to store files.</param>
-        /// <param name="request.fileContents">List of file contents.</param>
-        /// <param name="request.fileContents.data">File's bytes array.</param>
-        /// <param name="request.fileContents.fileName">File's name.</param>
+        /// <param name="destinationFolder">Folder to store files.</param>
+        /// <param name="fileContent.data">File's bytes array.</param>
+        /// <param name="fileContent.fileName">File's name.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route(nameof(StoreFile))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> StoreFile(StoreFileRequest request)
+        {
+            try
+            {
+                await _filesStorageService.StoreFile(request);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, string.Empty);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToSimpleError());
+            }
+        }
+
+        /// <summary>
+        /// Store multiple files.
+        /// </summary>
+        /// <param name="destinationFolder">Folder to store files.</param>
+        /// <param name="fileContents">List of file contents.</param>
+        /// <param name="fileContents.data">File's bytes array.</param>
+        /// <param name="fileContents.fileName">File's name.</param>
         [HttpPost]
         [Route(nameof(StoreFiles))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> StoreFiles(StoreFileRequest request)
+        public async Task<IActionResult> StoreFiles(StoreFilesRequest request)
         {
             try
             {
@@ -45,9 +70,31 @@ namespace Fries.Api.Controllers.FilesStorage
         }
 
         /// <summary>
-        /// Delete files.
+        /// Delete single files.
         /// </summary>
-        /// <param name="request.paths">Folder or file paths to delete.</param>
+        /// <param name="path">Folder or file path to delete.</param>
+        [HttpDelete]
+        [Route("{path}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteFile(string path)
+        {
+            try
+            {
+                _filesStorageService.DeleteFile(path);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, string.Empty);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToSimpleError());
+            }
+        }
+
+        /// <summary>
+        /// Delete multiple files.
+        /// </summary>
+        /// <param name="paths">Folder or file paths to delete.</param>
         [HttpPost]
         [Route(nameof(DeleteFiles))]
         [ProducesResponseType(StatusCodes.Status200OK)]

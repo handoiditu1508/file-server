@@ -4,7 +4,9 @@ namespace Fries.Services.Abstractions.FilesUpload
 {
     public interface IFilesStorageService
     {
-        Task StoreFiles(StoreFileRequest request);
+        Task StoreFile(StoreFileRequest request);
+        Task StoreFiles(StoreFilesRequest request);
+        void DeleteFile(string path);
         void DeleteFiles(DeleteFilesRequest request);
         Task<byte[]> GetFile(string path);
     }
