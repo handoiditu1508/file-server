@@ -30,5 +30,11 @@ namespace Fries.Helpers
         {
             public static CustomException FileNotFound(string file) => new(EnumExceptionGroup.FilesStorage, "FILES_STORAGE_001", $"File \"{file}\" not found.");
         }
+
+        public static class Authentication
+        {
+            public static readonly CustomException ApiKeyNotFound = new(EnumExceptionGroup.Authentication, "AUTHENTICATION_001", "Api key not found.");
+            public static readonly CustomException InvalidApiKey = new(EnumExceptionGroup.Authentication, "AUTHENTICATION_002", "Invalid api key.");
+        }
     }
 }

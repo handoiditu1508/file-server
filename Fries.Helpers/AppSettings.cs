@@ -31,5 +31,11 @@ namespace Fries.Helpers
             public static string BaseUrl => Configuration["LoggingService:BaseUrl"];
             public static string DefaultCollectionName => Configuration["LoggingService:DefaultCollectionName"];
         }
+
+        public static class ApiKey
+        {
+            public static string Name => Configuration["ApiKey:Name"];
+            public static string Value => Configuration["ApiKey:Value"] ?? EnvironmentVariable.ApiKeyValue;
+        }
     }
 }

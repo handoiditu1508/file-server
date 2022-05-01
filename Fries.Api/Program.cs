@@ -1,3 +1,4 @@
+using Fries.Api.Middlewares;
 using Fries.Helpers;
 using Fries.Helpers.Abstractions;
 using Fries.Services.Abstractions.FilesUpload;
@@ -34,6 +35,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
 

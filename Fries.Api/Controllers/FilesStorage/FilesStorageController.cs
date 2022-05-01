@@ -2,6 +2,7 @@
 using Fries.Models.Common;
 using Fries.Models.Requests.FilesStorage;
 using Fries.Services.Abstractions.FilesUpload;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fries.Api.Controllers.FilesStorage
@@ -120,6 +121,7 @@ namespace Fries.Api.Controllers.FilesStorage
         /// <returns>File base on path.</returns>
         [HttpGet]
         [Route("{path}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetFile(string path)

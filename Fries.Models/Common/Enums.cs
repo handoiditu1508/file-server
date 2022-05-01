@@ -9,7 +9,9 @@ namespace Fries.Models.Common
         [Description("VALIDATION")]
         Validation,
         [Description("FILES_STORAGE")]
-        FilesStorage
+        FilesStorage,
+        [Description("AUTHENTICATION")]
+        Authentication
     }
 
     public class NameValueAttribute : Attribute
