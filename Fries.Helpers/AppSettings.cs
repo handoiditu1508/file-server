@@ -25,5 +25,11 @@ namespace Fries.Helpers
                 return _configuration;
             }
         }
+
+        public static class LoggingService
+        {
+            public static string BaseUrl => Configuration["LoggingService:BaseUrl"];
+            public static string DefaultCollectionName => Configuration["LoggingService:DefaultCollectionName"];
+        }
     }
 }

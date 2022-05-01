@@ -17,7 +17,7 @@ namespace Fries.Helpers
 
         public static class System
         {
-            public static readonly CustomException UnexpectedError = new(EnumExceptionGroup.System, "SYSTEM_001", "Unexpected error.");
+            public static CustomException UnexpectedError(string message = "") => new(EnumExceptionGroup.System, "SYSTEM_001", $"Unexpected error{": " + message}.");
         }
 
         public static class Validation
