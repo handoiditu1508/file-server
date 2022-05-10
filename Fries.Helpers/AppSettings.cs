@@ -35,7 +35,7 @@ namespace Fries.Helpers
         public static class ApiKey
         {
             public static string Name => Configuration["ApiKey:Name"];
-            public static string Value => Configuration["ApiKey:Value"] ?? EnvironmentVariable.ApiKeyValue;
+            public static string Value => Configuration["ApiKey:Value"].IsNullOrEmpty() ? EnvironmentVariable.ApiKeyValue : Configuration["ApiKey:Value"];
         }
     }
 }
