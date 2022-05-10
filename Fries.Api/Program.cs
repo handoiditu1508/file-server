@@ -5,6 +5,7 @@ using Fries.Services.Abstractions.FilesUpload;
 using Fries.Services.Abstractions.LoggingService;
 using Fries.Services.FilesStorage;
 using Fries.Services.LoggingService;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,26 @@ builder.Logging.AddProvider(new CustomLoggerProvider());
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add api key authentication for swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme()
+    {
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Name = AppSettings.ApiKey.Name
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "ApiKey" }
+            },
+            new string[] { }
+        }
+    });
+});
 
 builder.Services.AddTransient<IHttpHelper, HttpHelper>();
 builder.Services.AddSingleton<IFilesStorageService, FilesStorageService>();
