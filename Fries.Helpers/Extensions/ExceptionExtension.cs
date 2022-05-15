@@ -19,7 +19,12 @@ namespace Fries.Helpers.Extensions
             if (exception.GetType() == typeof(CustomException))
             {
                 var customException = (CustomException)exception;
-                error = customException.ToSimpleError();
+                error = new SimpleError
+                {
+                    Code = customException.Code,
+                    Message = customException.Message,
+                    Group = customException.Group
+                };
             }
             else
             {

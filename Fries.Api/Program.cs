@@ -5,9 +5,15 @@ using Fries.Services.Abstractions.FilesUpload;
 using Fries.Services.Abstractions.LoggingService;
 using Fries.Services.FilesStorage;
 using Fries.Services.LoggingService;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 // Config ILogger
 builder.Logging.ClearProviders();
