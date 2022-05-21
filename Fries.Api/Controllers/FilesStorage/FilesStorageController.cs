@@ -1,4 +1,5 @@
-﻿using Fries.Helpers.Extensions;
+﻿using Fries.Api.Attributes;
+using Fries.Helpers.Extensions;
 using Fries.Models.Common;
 using Fries.Models.Requests.FilesStorage;
 using Fries.Services.Abstractions.FilesUpload;
@@ -9,6 +10,7 @@ namespace Fries.Api.Controllers.FilesStorage
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiKeyAuthenticate]
     public class FilesStorageController : ControllerBase
     {
         private readonly IFilesStorageService _filesStorageService;

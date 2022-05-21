@@ -1,4 +1,5 @@
-﻿using Fries.Helpers;
+﻿using Fries.Api.Attributes;
+using Fries.Helpers;
 using Fries.Helpers.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
@@ -18,8 +19,17 @@ namespace Fries.Api.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // check AllowAnonymous attribute
             var endpoint = context.GetEndpoint();
+
+            // check ApiKeyAuthenticateAttribute attribute
+            var isApiKeyProtected = endpoint?.Metadata.Any(x => x.GetType() == typeof(ApiKeyAuthenticateAttribute));
+            if (isApiKeyProtected == false)
+            {
+                await _next(context);
+                return;
+            }
+
+            // check AllowAnonymous attribute
             var isAllowAnonymous = endpoint?.Metadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
             if (isAllowAnonymous == true)
             {
