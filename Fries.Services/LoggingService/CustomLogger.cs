@@ -29,9 +29,9 @@ namespace Fries.Services.LoggingService
                 if (exception == null)
                 {
                     var message = formatter(state, exception);
-                    exception = CustomException.System.UnexpectedError(message);
+                    exception = logLevel > LogLevel.Information ? CustomException.System.UnexpectedError(message) : CustomException.System.Notification(message);
                 }
-                _httpHelper.Post("api/MongoLogging/InsertLogs", exception.ToInsertLogRequest(logLevel)).Wait();
+                _httpHelper.Post("api/MongoLogging/InsertLog", exception.ToInsertLogRequest(logLevel));
             }
             catch
             { }

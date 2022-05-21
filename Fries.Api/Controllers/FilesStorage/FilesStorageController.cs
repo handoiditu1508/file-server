@@ -23,10 +23,19 @@ namespace Fries.Api.Controllers.FilesStorage
         /// <summary>
         /// Store single file.
         /// </summary>
-        /// <param name="destinationFolder">Folder to store files.</param>
-        /// <param name="fileContent.data">File's bytes array.</param>
-        /// <param name="fileContent.fileName">File's name.</param>
-        /// <returns></returns>
+        /// <remarks>
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "destinationFolder": "user/123",// Folder to store files.
+        ///        "fileContent": {
+        ///           "data": [],// File's bytes array.
+        ///           "fileName": "avatar.png"// File's name.
+        ///        }
+        ///     }
+        ///
+        /// </remarks>
         [HttpPost]
         [Route(nameof(StoreFile))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -48,10 +57,21 @@ namespace Fries.Api.Controllers.FilesStorage
         /// <summary>
         /// Store multiple files.
         /// </summary>
-        /// <param name="destinationFolder">Folder to store files.</param>
-        /// <param name="fileContents">List of file contents.</param>
-        /// <param name="fileContents.data">File's bytes array.</param>
-        /// <param name="fileContents.fileName">File's name.</param>
+        /// <remarks>
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "destinationFolder": "user/123",// Folder to store files.
+        ///        "fileContents": [
+        ///           {
+        ///              "data": [],// File's bytes array.
+        ///              "fileName": "avatar.png"// File's name.
+        ///           }
+        ///        ]
+        ///     }
+        ///
+        /// </remarks>
         [HttpPost]
         [Route(nameof(StoreFiles))]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -74,15 +94,16 @@ namespace Fries.Api.Controllers.FilesStorage
         /// Delete single files.
         /// </summary>
         /// <param name="path">Folder or file path to delete.</param>
+        /// <param name="isFile">Specify wheather path leads to file or folder if both exist, leave empty if only one case exist.</param>
         [HttpDelete]
         [Route("{path}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteFile(string path)
+        public IActionResult DeleteFile(string path, bool? isFile = null)
         {
             try
             {
-                _filesStorageService.DeleteFile(path);
+                _filesStorageService.DeleteFile(path, isFile);
                 return Ok();
             }
             catch (Exception ex)
@@ -95,7 +116,23 @@ namespace Fries.Api.Controllers.FilesStorage
         /// <summary>
         /// Delete multiple files.
         /// </summary>
-        /// <param name="paths">Folder or file paths to delete.</param>
+        /// <remarks>
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "files": [//Folder or file paths to delete.
+        ///           {
+        ///              "path": "user/100/selfie.png"// File path to delete.
+        ///           },
+        ///           {
+        ///              "path": "user/100/product",// Folder path to delete.
+        ///              "isFile": false// Specify wheather path leads to file or folder if both exist, leave null if only one case exist.
+        ///           }
+        ///        ]
+        ///     }
+        ///
+        /// </remarks>
         [HttpPost]
         [Route(nameof(DeleteFiles))]
         [ProducesResponseType(StatusCodes.Status200OK)]

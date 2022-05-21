@@ -6,7 +6,7 @@ namespace Fries.Services.Abstractions.FilesUpload
     {
         Task StoreFile(StoreFileRequest request);
         Task StoreFiles(StoreFilesRequest request);
-        void DeleteFile(string path);
+        void DeleteFile(string path, bool? isFile = null);
         void DeleteFiles(DeleteFilesRequest request);
         Task<byte[]> GetFile(string path);
     }

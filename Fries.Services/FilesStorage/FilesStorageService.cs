@@ -68,42 +68,47 @@ namespace Fries.Services.FilesStorage
             await Task.WhenAll(tasks);
         }
 
-        public void DeleteFile(string path)
+        public void DeleteFile(string path, bool? isFile = null)
         {
             if (path.IsNullOrWhiteSpace())
                 throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(path));
 
             var fullPath = Path.Combine(_rootPath, path);
 
-            if (FileHelper.IsDirectory(path))
+            if (!isFile.HasValue)
             {
-                Directory.Delete(fullPath, true);
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+                else if (Directory.Exists(fullPath))
+                {
+                    Directory.Delete(fullPath, true);
+                }
             }
             else
             {
-                File.Delete(fullPath);
+                if (isFile.Value && File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+                else if (Directory.Exists(fullPath))
+                {
+                    Directory.Delete(fullPath, true);
+                }
             }
         }
 
         public void DeleteFiles(DeleteFilesRequest request)
         {
-            if (request.Paths.IsNullOrEmpty())
-                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.Paths));
+            if (request.Files.IsNullOrEmpty())
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.Files));
 
-            foreach (var path in request.Paths)
+            foreach (var file in request.Files)
             {
                 try
                 {
-                    var fullPath = Path.Combine(_rootPath, path);
-
-                    if (FileHelper.IsDirectory(path))
-                    {
-                        Directory.Delete(fullPath, true);
-                    }
-                    else
-                    {
-                        File.Delete(fullPath);
-                    }
+                    DeleteFile(file.Path, file.IsFile);
                 }
                 catch (Exception ex)
                 {
