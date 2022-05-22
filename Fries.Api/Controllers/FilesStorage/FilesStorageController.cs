@@ -95,16 +95,15 @@ namespace Fries.Api.Controllers.FilesStorage
         /// Delete single files.
         /// </summary>
         /// <param name="path">Folder or file path to delete.</param>
-        /// <param name="isFile">Specify wheather path leads to file or folder if both exist, leave empty if only one case exist.</param>
         [HttpDelete]
-        [Route("{path}")]
+        [Route("{**path}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteFile(string path, bool? isFile = null)
+        public IActionResult DeleteFile(string path)
         {
             try
             {
-                _filesStorageService.DeleteFile(path, isFile);
+                _filesStorageService.DeleteFile(path);
                 return Ok();
             }
             catch (Exception ex)
@@ -122,14 +121,9 @@ namespace Fries.Api.Controllers.FilesStorage
         /// Sample request:
         ///
         ///     {
-        ///        "files": [//Folder or file paths to delete.
-        ///           {
-        ///              "path": "user/100/selfie.png"// File path to delete.
-        ///           },
-        ///           {
-        ///              "path": "user/100/product",// Folder path to delete.
-        ///              "isFile": false// Specify wheather path leads to file or folder if both exist, leave null if only one case exist.
-        ///           }
+        ///        "paths": [//Folder or file paths to delete.
+        ///           "user/100/selfie.png",
+        ///           "user/100/product"
         ///        ]
         ///     }
         ///
@@ -158,7 +152,7 @@ namespace Fries.Api.Controllers.FilesStorage
         /// <param name="path">Path of file.</param>
         /// <returns>File base on path.</returns>
         [HttpGet]
-        [Route("{path}")]
+        [Route("{**path}")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]

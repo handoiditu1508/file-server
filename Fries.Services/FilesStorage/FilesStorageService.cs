@@ -31,9 +31,11 @@ namespace Fries.Services.FilesStorage
             if (request.DestinationFolder == null)
                 request.DestinationFolder = string.Empty;
 
-            Directory.CreateDirectory(_rootPath);
+            // Create folder to hold file if not exist.
+            var folderPath = Path.Combine(_rootPath, request.DestinationFolder);
+            Directory.CreateDirectory(folderPath);
 
-            var filePath = Path.Combine(_rootPath, request.DestinationFolder, request.FileContent.FileName);
+            var filePath = Path.Combine(folderPath, request.FileContent.FileName);
 
             await File.WriteAllBytesAsync(filePath, request.FileContent.Data);
         }
@@ -49,13 +51,15 @@ namespace Fries.Services.FilesStorage
             if (request.DestinationFolder == null)
                 request.DestinationFolder = string.Empty;
 
-            Directory.CreateDirectory(_rootPath);
+            // Create folder to hold file if not exist.
+            var folderPath = Path.Combine(_rootPath, request.DestinationFolder);
+            Directory.CreateDirectory(folderPath);
 
             var tasks = request.FileContents.Select(async fileContent =>
             {
                 try
                 {
-                    var filePath = Path.Combine(_rootPath, request.DestinationFolder, fileContent.FileName);
+                    var filePath = Path.Combine(folderPath, fileContent.FileName);
 
                     await File.WriteAllBytesAsync(filePath, fileContent.Data);
                 }
@@ -68,47 +72,33 @@ namespace Fries.Services.FilesStorage
             await Task.WhenAll(tasks);
         }
 
-        public void DeleteFile(string path, bool? isFile = null)
+        public void DeleteFile(string path)
         {
             if (path.IsNullOrWhiteSpace())
                 throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(path));
 
             var fullPath = Path.Combine(_rootPath, path);
 
-            if (!isFile.HasValue)
+            if (File.Exists(fullPath))
             {
-                if (File.Exists(fullPath))
-                {
-                    File.Delete(fullPath);
-                }
-                else if (Directory.Exists(fullPath))
-                {
-                    Directory.Delete(fullPath, true);
-                }
+                File.Delete(fullPath);
             }
-            else
+            else if (Directory.Exists(fullPath))
             {
-                if (isFile.Value && File.Exists(fullPath))
-                {
-                    File.Delete(fullPath);
-                }
-                else if (Directory.Exists(fullPath))
-                {
-                    Directory.Delete(fullPath, true);
-                }
+                Directory.Delete(fullPath, true);
             }
         }
 
         public void DeleteFiles(DeleteFilesRequest request)
         {
-            if (request.Files.IsNullOrEmpty())
-                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.Files));
+            if (request.Paths.IsNullOrEmpty())
+                throw CustomException.Validation.PropertyIsNullOrEmpty(nameof(request.Paths));
 
-            foreach (var file in request.Files)
+            foreach (var path in request.Paths)
             {
                 try
                 {
-                    DeleteFile(file.Path, file.IsFile);
+                    DeleteFile(path);
                 }
                 catch (Exception ex)
                 {

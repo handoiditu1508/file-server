@@ -2,6 +2,6 @@
 {
     public class DeleteFilesRequest
     {
-        public IEnumerable<DeleteFileRequest> Files { get; set; }
+        public IEnumerable<string> Paths { get; set; }
     }
 }

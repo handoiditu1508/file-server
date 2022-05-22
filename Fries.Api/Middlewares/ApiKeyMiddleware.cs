@@ -21,6 +21,12 @@ namespace Fries.Api.Middlewares
         {
             var endpoint = context.GetEndpoint();
 
+            if (endpoint == null)
+            {
+                await _next(context);
+                return;
+            }
+
             // check ApiKeyAuthenticateAttribute attribute
             var isApiKeyProtected = endpoint?.Metadata.Any(x => x.GetType() == typeof(ApiKeyAuthenticateAttribute));
             if (isApiKeyProtected == false)
