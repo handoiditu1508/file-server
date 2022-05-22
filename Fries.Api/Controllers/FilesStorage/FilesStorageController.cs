@@ -39,7 +39,6 @@ namespace Fries.Api.Controllers.FilesStorage
         ///
         /// </remarks>
         [HttpPost]
-        [Route(nameof(StoreFile))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> StoreFile(StoreFileRequest request)
