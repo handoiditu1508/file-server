@@ -9,7 +9,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
+var appCors = "AppCors";
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(appCors,
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:44307")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -65,6 +78,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(appCors);
 
 app.UseAuthorization();
 
