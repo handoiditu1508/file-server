@@ -23,8 +23,8 @@ namespace Fries.Helpers
 
         public static class Validation
         {
-            public static CustomException PropertyIsNullOrEmpty(string propertyName) => new CustomException(EnumExceptionGroup.Validation, "VALIDATION_001", $"Property {propertyName} is null or empty.");
-            public static CustomException PropertyIsInvalid(string propertyName) => new CustomException(EnumExceptionGroup.Validation, "VALIDATION_002", $"Property {propertyName} is invalid.");
+            public static CustomException PropertyIsNullOrEmpty(string propertyName) => new(EnumExceptionGroup.Validation, "VALIDATION_001", $"Property {propertyName} is null or empty.");
+            public static CustomException PropertyIsInvalid(string propertyName) => new(EnumExceptionGroup.Validation, "VALIDATION_002", $"Property {propertyName} is invalid.");
         }
 
         public static class FilesStorage
@@ -36,6 +36,7 @@ namespace Fries.Helpers
         {
             public static readonly CustomException ApiKeyNotFound = new(EnumExceptionGroup.Authentication, "AUTHENTICATION_001", "Api key not found.");
             public static readonly CustomException InvalidApiKey = new(EnumExceptionGroup.Authentication, "AUTHENTICATION_002", "Invalid api key.");
+            public static CustomException ForbiddenIpAddress(string ipAddress) => new(EnumExceptionGroup.Authentication, "AUTHENTICATION_003", $"Forbidden IP Address: {ipAddress}.");
         }
     }
 }

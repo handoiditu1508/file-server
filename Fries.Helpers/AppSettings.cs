@@ -37,5 +37,7 @@ namespace Fries.Helpers
             public static string Name => Configuration["ApiKey:Name"];
             public static string Value => Configuration["ApiKey:Value"].IsNullOrEmpty() ? EnvironmentVariable.ApiKeyValue : Configuration["ApiKey:Value"];
         }
+
+        public static string[] SafeList => Configuration.GetSection("SafeList").Get<string[]>();
     }
 }

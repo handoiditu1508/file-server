@@ -28,16 +28,16 @@ namespace Fries.Api.Middlewares
             }
 
             // check ApiKeyAuthenticateAttribute attribute
-            var isApiKeyProtected = endpoint?.Metadata.Any(x => x.GetType() == typeof(ApiKeyAuthenticateAttribute));
-            if (isApiKeyProtected == false)
+            var isApiKeyProtected = endpoint.Metadata.Any(x => x.GetType() == typeof(ApiKeyAuthenticateAttribute));
+            if (!isApiKeyProtected)
             {
                 await _next(context);
                 return;
             }
 
             // check AllowAnonymous attribute
-            var isAllowAnonymous = endpoint?.Metadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
-            if (isAllowAnonymous == true)
+            var isAllowAnonymous = endpoint.Metadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
+            if (isAllowAnonymous)
             {
                 await _next(context);
                 return;

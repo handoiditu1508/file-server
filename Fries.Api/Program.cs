@@ -1,3 +1,4 @@
+using Fries.Api.Attributes;
 using Fries.Api.Middlewares;
 using Fries.Helpers;
 using Fries.Helpers.Abstractions;
@@ -18,7 +19,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(appCors,
         policy =>
         {
-            policy.WithOrigins("https://localhost:44307")
+            policy.WithOrigins("http://localhost:3000")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -67,6 +68,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddTransient<IHttpHelper, HttpHelper>();
 builder.Services.AddSingleton<IFilesStorageService, FilesStorageService>();
 builder.Services.AddSingleton<ILoggingService, LoggingService>();
+builder.Services.AddSafeListActionFilter();
 
 var app = builder.Build();
 
@@ -82,6 +84,8 @@ app.UseHttpsRedirection();
 app.UseCors(appCors);
 
 app.UseAuthorization();
+
+app.UseMiddleware<SafeListMiddleware>(AppSettings.SafeList);
 
 app.UseMiddleware<ApiKeyMiddleware>();
 
