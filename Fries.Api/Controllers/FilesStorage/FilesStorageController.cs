@@ -154,6 +154,7 @@ namespace Fries.Api.Controllers.FilesStorage
         [HttpGet]
         [Route("{**path}")]
         [AllowAnonymous]
+        [AllowAnonymousIp]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(SimpleError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetFile(string path)
